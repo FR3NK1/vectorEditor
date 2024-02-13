@@ -1,0 +1,6 @@
+.functionsBar {
+  height: 100%;
+  width: 60px;
+  border-right: calc(0.0625rem * var(--mantine-scale)) solid var(--mantine-color-gray-2);
+  padding-top: 25px;
+}

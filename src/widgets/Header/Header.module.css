@@ -1,0 +1,7 @@
+.header {
+  height: 60px;
+  width: 100%;
+  padding-left: 25px;
+  padding-right: 25px;
+  border-bottom: calc(0.0625rem * var(--mantine-scale)) solid var(--mantine-color-gray-2);
+}
