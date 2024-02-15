@@ -1,5 +1,5 @@
 import { Group, Text } from '@mantine/core'
-import ChangeSizePopover from '../../features/ChangeSizePopover/ChangeSizePopover'
+import ChangeSizePopover from '../../features/Functions/ui/ChangeSizePopover'
 import classes from './Header.module.css'
 
 const Header = () => {

@@ -1,18 +1,12 @@
 import { Button, NumberInput, Popover } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
-import { useSelector } from 'react-redux'
-import { useAppDispatch } from '../../app/hooks/hooks'
-import { IRootState } from '../../app/store/store'
-import { changeCanvasSize } from '../Canvas/api/CanvasSlice'
+import { canvasManager } from '../api/CanvasManager'
 
 const ChangeSizePopover = () => {
-  const size = useSelector((state: IRootState) => state.canvas.size)
-  const dispatch = useAppDispatch()
-
   const sizeForm = useForm({
     initialValues: {
-      width: size.width,
-      height: size.height,
+      width: 0,
+      height: 0,
     },
 
     validate: {
@@ -22,21 +16,28 @@ const ChangeSizePopover = () => {
   })
 
   return (
-    <Popover width={300} trapFocus position='bottom' withArrow shadow='md'>
+    <Popover
+      onChange={() =>
+        sizeForm.setValues({
+          width: canvasManager.canvas?.width,
+          height: canvasManager.canvas?.height,
+        })
+      }
+      width={300}
+      trapFocus
+      position='bottom'
+      withArrow
+      shadow='md'
+    >
       <Popover.Target>
-        <Button>Размер</Button>
+        <Button onClick={() => console.log(123)}>Размер</Button>
       </Popover.Target>
       <Popover.Dropdown>
         <NumberInput label='Ширина' {...sizeForm.getInputProps('width')} />
         <NumberInput label='Высота' {...sizeForm.getInputProps('height')} />
         <Button
           onClick={() =>
-            dispatch(
-              changeCanvasSize({
-                width: sizeForm.values.width,
-                height: sizeForm.values.height,
-              }),
-            )
+            canvasManager.changeCanvasSize(sizeForm.values.width, sizeForm.values.height)
           }
         >
           Сохранить
