@@ -11,6 +11,12 @@ class CanvasManager {
       selection: true,
     })
   }
+  public changeCanvasSize(width: number, height: number) {
+    if (this.canvas) {
+      this.canvas.setWidth(width)
+      this.canvas.setHeight(height)
+    }
+  }
   public addRect() {
     const rect = new fabric.Rect({
       fill: 'red',
@@ -43,11 +49,16 @@ class CanvasManager {
       triangle.center()
     }
   }
-  public changeCanvasSize(width: number, height: number) {
-    if (this.canvas) {
-      this.canvas.setWidth(width)
-      this.canvas.setHeight(height)
+  public changeSelectionColor(color: string) {
+    const selectionGroup = this.canvas?.getActiveObject() as any
+    if ('_objects' in selectionGroup) {
+      selectionGroup._objects.forEach((selectionElement: any) => {
+        selectionElement.set('fill', color)
+      })
+    } else if (selectionGroup) {
+      selectionGroup.set('fill', color)
     }
+    this.canvas?.renderAll()
   }
 }
 
