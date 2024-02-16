@@ -1,5 +1,5 @@
 import { Stack } from '@mantine/core'
-import ChangeShapeColor from '../../features/Properties/ChangeShapeColor'
+import ChangeShapeColor from '../../features/Properties/ui/ChangeShapeColor.tsx/ChangeShapeColor'
 import classes from './PropertiesBar.module.css'
 
 const PropertiesBar = () => {

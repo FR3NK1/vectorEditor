@@ -1,4 +1,8 @@
 import { fabric } from 'fabric'
+import {
+  GradientColor,
+  GradientCoordinates,
+} from '../../Properties/ui/ChangeShapeColor.tsx/ChangeShapeGradient'
 
 class CanvasManager {
   canvas: fabric.Canvas | null = null
@@ -58,6 +62,28 @@ class CanvasManager {
         })
       } else {
         selectionGroup.set('fill', color)
+      }
+      this.canvas?.renderAll()
+    }
+  }
+  public changeSelectionGradient(
+    gradientColors: GradientColor[],
+    gradientCoordinates: GradientCoordinates,
+  ) {
+    const selectionGroup = this.canvas?.getActiveObject() as any
+    const gradient = new fabric.Gradient({
+      type: 'linear',
+      gradientUnits: 'percentage',
+      coords: gradientCoordinates,
+      colorStops: gradientColors,
+    })
+    if (selectionGroup) {
+      if ('_objects' in selectionGroup) {
+        selectionGroup._objects.forEach((selectionElement: any) => {
+          selectionElement.set('fill', gradient)
+        })
+      } else {
+        selectionGroup.set('fill', gradient)
       }
       this.canvas?.renderAll()
     }

@@ -1,0 +1,14 @@
+.indicatorParent {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+}
+
+.indicatorChild {
+  display: none;
+}
+
+.indicatorParent:hover .indicatorChild {
+  display: block;
+}
