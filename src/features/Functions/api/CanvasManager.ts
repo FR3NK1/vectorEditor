@@ -51,14 +51,16 @@ class CanvasManager {
   }
   public changeSelectionColor(color: string) {
     const selectionGroup = this.canvas?.getActiveObject() as any
-    if ('_objects' in selectionGroup) {
-      selectionGroup._objects.forEach((selectionElement: any) => {
-        selectionElement.set('fill', color)
-      })
-    } else if (selectionGroup) {
-      selectionGroup.set('fill', color)
+    if (selectionGroup) {
+      if ('_objects' in selectionGroup) {
+        selectionGroup._objects.forEach((selectionElement: any) => {
+          selectionElement.set('fill', color)
+        })
+      } else {
+        selectionGroup.set('fill', color)
+      }
+      this.canvas?.renderAll()
     }
-    this.canvas?.renderAll()
   }
 }
 
