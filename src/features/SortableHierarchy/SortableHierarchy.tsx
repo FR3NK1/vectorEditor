@@ -1,59 +1,54 @@
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import _ from 'lodash'
-import { useState } from 'react'
+import { ActionIcon, Group } from '@mantine/core'
+import { IconRowInsertTop } from '@tabler/icons-react'
+import { useEffect, useState } from 'react'
 import { store } from '../../app/store/store'
-import { canvasManager } from '../Functions/api/CanvasManager'
-import { ICanvasObject, movingItems } from '../Functions/api/CanvasSlice'
-import SortableHierarchyItem from './SortableHierarchyItem'
+import { SortableTree } from '../../shared/SortableTree/Tree/SortableTree'
+import { FlattenedItem, TreeItems } from '../../shared/SortableTree/Tree/types'
+import { buildTree, flattenTree } from '../../shared/SortableTree/Tree/utilities'
+import { addNewGroup, setCanvasObjects } from '../Functions/api/CanvasSlice'
 
 interface SortableHierarchyProps {
-  canvasObjects: ICanvasObject[]
+  canvasObjects: FlattenedItem[]
 }
 
 const SortableHierarchy = ({ canvasObjects }: SortableHierarchyProps) => {
-  const [items, setItems] = useState(canvasObjects)
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  )
+  const [treeItems, setTreeItems] = useState<TreeItems>([])
 
-  function handleDragEnd(event: any) {
-    const { active, over } = event
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = _.findIndex(items, ['id', active.id])
-        const newIndex = _.findIndex(items, ['id', over.id])
-        canvasManager.moveTo(active.id, newIndex)
-        const movingArray = arrayMove(items, oldIndex, newIndex)
-        store.dispatch(movingItems(movingArray))
-        return movingArray
-      })
+  const [isRender, setIsRender] = useState(true)
+  useEffect(() => {
+    setIsRender(false)
+  }, [canvasObjects])
+
+  useEffect(() => {
+    if (!isRender) {
+      setIsRender(true)
     }
-  }
+  }, [isRender])
 
+  useEffect(() => {
+    store.dispatch(setCanvasObjects(flattenTree(treeItems)))
+  }, [treeItems])
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((item) => (
-          <SortableHierarchyItem key={item.id} item={item} />
-        ))}
-      </SortableContext>
-    </DndContext>
+    <>
+      {canvasObjects.length > 0 && isRender && (
+        <SortableTree
+          sortableItems={buildTree(canvasObjects)}
+          setSortableItems={setTreeItems}
+          collapsible
+          indicator
+        />
+      )}
+      <Group pos='fixed' right={10} bottom={10}>
+        <ActionIcon
+          size='lg'
+          variant='light'
+          color='gray'
+          onClick={() => store.dispatch(addNewGroup())}
+        >
+          <IconRowInsertTop />
+        </ActionIcon>
+      </Group>
+    </>
   )
 }
 

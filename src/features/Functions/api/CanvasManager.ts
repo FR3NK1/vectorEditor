@@ -1,3 +1,4 @@
+import { UniqueIdentifier } from '@dnd-kit/core'
 import { fabric } from 'fabric'
 import { store } from '../../../app/store/store'
 import {
@@ -24,6 +25,15 @@ class CanvasManager {
       this.canvas.setHeight(height)
     }
   }
+
+  getObjectsTypeCount = (type: string) => {
+    return this.canvas
+      ? this.canvas.getObjects().filter((item) => {
+          const itemType = item.data.id.split(' ')[0]
+          return itemType === type
+        }).length + 1
+      : 0
+  }
   public addRect() {
     if (this.canvas) {
       const rect = new fabric.Rect({
@@ -31,11 +41,20 @@ class CanvasManager {
         width: 200,
         height: 200,
         data: {
-          id: this.id,
+          id: 'Rect ' + this.getObjectsTypeCount('Rect'),
           layer: this.canvas.getObjects().length,
         },
       })
-      store.dispatch(addCanvasObject({ id: rect.data.id, type: 'Rect' }))
+      store.dispatch(
+        addCanvasObject({
+          children: [],
+          depth: 0,
+          id: rect.data.id,
+          index: 0,
+          parentId: null,
+          type: 'file',
+        }),
+      )
       this.id++
 
       this.canvas.add(rect)
@@ -48,11 +67,20 @@ class CanvasManager {
         fill: 'green',
         radius: 100,
         data: {
-          id: this.id,
+          id: 'Circle ' + this.getObjectsTypeCount('Circle'),
           layer: this.canvas.getObjects().length,
         },
       })
-      store.dispatch(addCanvasObject({ id: circle.data.id, type: 'Circle' }))
+      store.dispatch(
+        addCanvasObject({
+          children: [],
+          depth: 0,
+          id: circle.data.id,
+          index: 0,
+          parentId: null,
+          type: 'file',
+        }),
+      )
       this.id++
 
       this.canvas.add(circle)
@@ -66,11 +94,20 @@ class CanvasManager {
         width: 200,
         height: 200,
         data: {
-          id: this.id,
+          id: 'Triangle ' + this.getObjectsTypeCount('Triangle'),
           layer: this.canvas.getObjects().length,
         },
       })
-      store.dispatch(addCanvasObject({ id: triangle.data.id, type: 'Triangle' }))
+      store.dispatch(
+        addCanvasObject({
+          children: [],
+          depth: 0,
+          id: triangle.data.id,
+          index: 0,
+          parentId: null,
+          type: 'file',
+        }),
+      )
       this.id++
 
       this.canvas.add(triangle)
@@ -112,7 +149,7 @@ class CanvasManager {
       this.canvas?.renderAll()
     }
   }
-  public moveTo(objectId: number, layer: number) {
+  public moveTo(objectId: UniqueIdentifier, layer: number) {
     const object = this.canvas?.getObjects().find((item) => item.data.id === objectId)
     if (object) {
       object.moveTo(layer)

@@ -4,7 +4,7 @@ import classes from './Header.module.css'
 
 const Header = () => {
   return (
-    <Group justify='space-between' className={classes.header}>
+    <Group id='Header' justify='space-between' className={classes.header}>
       <Group>
         <Text
           size='xl'
