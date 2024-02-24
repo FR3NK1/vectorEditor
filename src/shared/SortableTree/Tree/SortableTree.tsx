@@ -67,12 +67,17 @@ const dropAnimationConfig: DropAnimation = {
 
 interface Props {
   collapsible?: boolean
-  defaultItems?: TreeItems
   indentationWidth?: number
   indicator?: boolean
   removable?: boolean
   sortableItems: TreeItems
   setSortableItems: React.Dispatch<React.SetStateAction<TreeItems>>
+  setSelectedItemId: React.Dispatch<
+    React.SetStateAction<{
+      isShiftKeyDown: boolean
+      selectedArray: string[]
+    }>
+  >
 }
 
 export function SortableTree({
@@ -82,6 +87,7 @@ export function SortableTree({
   removable,
   sortableItems,
   setSortableItems,
+  setSelectedItemId,
 }: Props) {
   const [items, setItems] = useState(sortableItems)
   useDidUpdate(() => {
@@ -177,6 +183,22 @@ export function SortableTree({
             collapsed={Boolean(collapsed && children.length)}
             onCollapse={collapsible && children.length ? () => handleCollapse(id) : undefined}
             onRemove={removable ? () => handleRemove(id) : undefined}
+            onClick={(event) => {
+              if (event.shiftKey) {
+                setSelectedItemId((prev) => ({
+                  isShiftKeyDown: true,
+                  selectedArray: [...prev.selectedArray, id],
+                }))
+              } else if (event.metaKey) {
+                setSelectedItemId((prev) => ({
+                  isShiftKeyDown: false,
+                  selectedArray: [...prev.selectedArray, id],
+                }))
+                return false
+              } else {
+                setSelectedItemId({ isShiftKeyDown: false, selectedArray: [id] })
+              }
+            }}
           />
         ))}
         {createPortal(

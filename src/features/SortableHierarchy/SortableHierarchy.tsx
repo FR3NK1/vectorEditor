@@ -5,7 +5,7 @@ import { store } from '../../app/store/store'
 import { SortableTree } from '../../shared/SortableTree/Tree/SortableTree'
 import { FlattenedItem, TreeItems } from '../../shared/SortableTree/Tree/types'
 import { buildTree, flattenTree } from '../../shared/SortableTree/Tree/utilities'
-import { addNewGroup, setCanvasObjects } from '../Functions/api/CanvasSlice'
+import { addNewGroup, selectCanvasObjects, setCanvasObjects } from '../Functions/api/CanvasSlice'
 
 interface SortableHierarchyProps {
   canvasObjects: FlattenedItem[]
@@ -28,12 +28,22 @@ const SortableHierarchy = ({ canvasObjects }: SortableHierarchyProps) => {
   useEffect(() => {
     store.dispatch(setCanvasObjects(flattenTree(treeItems)))
   }, [treeItems])
+
+  const [selectedItemId, setSelectedItemId] = useState<{
+    isShiftKeyDown: boolean
+    selectedArray: string[]
+  }>({ isShiftKeyDown: false, selectedArray: [] })
+
+  useEffect(() => {
+    store.dispatch(selectCanvasObjects(selectedItemId))
+  }, [selectedItemId])
   return (
     <>
       {canvasObjects.length > 0 && isRender && (
         <SortableTree
           sortableItems={buildTree(canvasObjects)}
           setSortableItems={setTreeItems}
+          setSelectedItemId={setSelectedItemId}
           collapsible
           indicator
         />

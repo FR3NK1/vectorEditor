@@ -5,7 +5,7 @@ import {
   GradientColor,
   GradientCoordinates,
 } from '../../Properties/ui/ChangeShapeColor.tsx/ChangeShapeGradient'
-import { addCanvasObject } from './CanvasSlice'
+import { addCanvasObject, deleteCanvasObject } from './CanvasSlice'
 
 class CanvasManager {
   canvas: fabric.Canvas | null = null
@@ -124,7 +124,7 @@ class CanvasManager {
       } else {
         selectionGroup.set('fill', color)
       }
-      this.canvas?.renderAll()
+      this.canvas?.requestRenderAll()
     }
   }
   public changeSelectionGradient(
@@ -146,14 +146,49 @@ class CanvasManager {
       } else {
         selectionGroup.set('fill', gradient)
       }
-      this.canvas?.renderAll()
+      this.canvas?.requestRenderAll()
     }
   }
   public moveTo(objectId: UniqueIdentifier, layer: number) {
     const object = this.canvas?.getObjects().find((item) => item.data.id === objectId)
     if (object) {
       object.moveTo(layer)
-      this.canvas?.renderAll()
+      this.canvas?.requestRenderAll()
+    }
+  }
+
+  public selectObjects(objectId: string[]) {
+    if (this.canvas) {
+      const canvasObjects = this.canvas
+        .getObjects()
+        .filter((item) => objectId.includes(item.data.id))
+      if (canvasObjects.length > 0) {
+        this.canvas.discardActiveObject()
+        this.canvas.requestRenderAll()
+        const sel = new fabric.ActiveSelection(canvasObjects, {
+          canvas: this.canvas,
+        })
+        this.canvas.setActiveObject(sel)
+        this.canvas.requestRenderAll()
+      }
+    }
+  }
+
+  public deleteSelectedObjects() {
+    if (this.canvas) {
+      const selectionGroup = this.canvas?.getActiveObject() as any
+      if (selectionGroup) {
+        if ('_objects' in selectionGroup) {
+          selectionGroup._objects.forEach((selectionElement: any) => {
+            store.dispatch(deleteCanvasObject(selectionElement.data.id))
+            this.canvas?.remove(selectionElement)
+          })
+        } else {
+          store.dispatch(deleteCanvasObject(selectionGroup.data.id))
+          this.canvas.remove(selectionGroup)
+        }
+        this.canvas.requestRenderAll()
+      }
     }
   }
 }
