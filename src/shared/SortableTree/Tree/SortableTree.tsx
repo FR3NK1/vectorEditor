@@ -256,10 +256,8 @@ export function SortableTree({
       const overIndex = clonedItems.findIndex(({ id }) => id === over.id)
       const activeIndex = clonedItems.findIndex(({ id }) => id === active.id)
       // Модификация: файлы не могут быть группой
-      if (overIndex !== activeIndex) {
-        if (clonedItems[overIndex].type === 'file' && depth > clonedItems[overIndex].depth) {
-          return
-        }
+      if (!(parentId?.split(' ')[0] === 'Group') && depth > clonedItems[activeIndex].depth) {
+        return
       }
       const activeTreeItem = clonedItems[activeIndex]
 
