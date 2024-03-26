@@ -1,6 +1,7 @@
 import { ActionIcon, Stack } from '@mantine/core'
-import { IconIcons, IconTextSize } from '@tabler/icons-react'
+import { IconTextSize } from '@tabler/icons-react'
 import CreateShapeButton from '../../features/Functions/ui/CreateShapeButton'
+import VectorImagesButton from '../../features/Functions/ui/VectorImagesButton'
 import classes from './FunctionsBar.module.css'
 const FunctionsBar = () => {
   return (
@@ -9,9 +10,7 @@ const FunctionsBar = () => {
         <IconTextSize />
       </ActionIcon>
       <CreateShapeButton />
-      <ActionIcon variant='light' color='orange' aria-label='Icons' size='xl'>
-        <IconIcons />
-      </ActionIcon>
+      <VectorImagesButton />
     </Stack>
   )
 }
