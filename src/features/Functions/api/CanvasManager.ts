@@ -13,11 +13,12 @@ class CanvasManager {
 
   public setCanvas() {
     this.canvas = new fabric.Canvas('canvas', {
-      height: 500,
-      width: 500,
+      height: window.innerHeight - 100,
+      width: window.innerHeight - 100,
       backgroundColor: 'white',
       selection: true,
     })
+    this.canvas.setZoom(0.5)
   }
   public changeCanvasSize(width: number, height: number) {
     if (this.canvas) {
@@ -190,6 +191,40 @@ class CanvasManager {
         this.canvas.requestRenderAll()
       }
     }
+  }
+
+  public renderSVG(data: string) {
+    fabric.loadSVGFromString(data, (objects, options) => {
+      if (this.canvas) {
+        const obj = fabric.util.groupSVGElements(objects, options)
+
+        if ('_objects' in obj) {
+          obj._objects.forEach((selectionElement: any) => {
+            if (this.canvas) {
+              selectionElement.set({
+                data: {
+                  id: 'Path ' + this.getObjectsTypeCount('Path'),
+                  layer: this.canvas.getObjects().length,
+                },
+              })
+              store.dispatch(
+                addCanvasObject({
+                  children: [],
+                  depth: 0,
+                  id: selectionElement.data.id,
+                  index: 0,
+                  parentId: null,
+                  type: 'file',
+                }),
+              )
+              this.id++
+              this.canvas.add(selectionElement)
+            }
+          })
+        }
+        this.canvas.requestRenderAll()
+      }
+    })
   }
 }
 

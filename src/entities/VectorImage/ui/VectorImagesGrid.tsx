@@ -1,4 +1,6 @@
+import { notifications } from '@mantine/notifications'
 import _ from 'lodash'
+import { canvasManager } from '../../../features/Functions/api/CanvasManager'
 import { useLazyGetVectorImageByIdQuery } from '../api/VectorImageApi'
 import { IVectorImagesItems } from '../model/IVectorImages'
 import classes from './VectorImagesGrid.module.css'
@@ -12,8 +14,35 @@ const VectorImagesGrid = ({ data }: VectorImagesGridProps) => {
   const [fetchData] = useLazyGetVectorImageByIdQuery()
 
   const getImage = async (id: number) => {
+    notifications.show({
+      id: 'getVectorImage',
+      title: 'Загрузка',
+      message: 'Пожалуйста, подождите',
+      loading: true,
+      color: 'blue',
+      autoClose: false,
+    })
     const result = await fetchData(id)
-    console.log(result.data)
+    if (result.isError) {
+      notifications.update({
+        id: 'getVectorImage',
+        title: 'Возникла ошибка',
+        message: String(result.error),
+        loading: false,
+        color: 'red',
+        autoClose: true,
+      })
+    } else {
+      canvasManager.renderSVG(result.data)
+      notifications.update({
+        id: 'getVectorImage',
+        title: 'Изображение добавлено',
+        message: '',
+        loading: false,
+        color: 'green',
+        autoClose: true,
+      })
+    }
   }
   return (
     <div className={classes.row}>
