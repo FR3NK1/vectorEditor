@@ -19,6 +19,19 @@ class CanvasManager {
       selection: true,
     })
     this.canvas.setZoom(0.5)
+
+    this.canvas.on('mouse:wheel', (opt) => {
+      if (opt.e.altKey) {
+        var delta = opt.e.deltaY
+        var zoom = this.canvas?.getZoom() ?? 0
+        zoom *= 0.999 ** delta
+        if (zoom > 20) zoom = 20
+        if (zoom < 0.01) zoom = 0.01
+        this.canvas?.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
+        opt.e.preventDefault()
+        opt.e.stopPropagation() 
+      }
+    })
   }
   public changeCanvasSize(width: number, height: number) {
     if (this.canvas) {
