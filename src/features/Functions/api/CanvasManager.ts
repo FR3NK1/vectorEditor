@@ -29,7 +29,7 @@ class CanvasManager {
         if (zoom < 0.01) zoom = 0.01
         this.canvas?.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
         opt.e.preventDefault()
-        opt.e.stopPropagation() 
+        opt.e.stopPropagation()
       }
     })
   }
@@ -238,6 +238,20 @@ class CanvasManager {
         this.canvas.requestRenderAll()
       }
     })
+  }
+
+  public exportToSvg(fileName: string) {
+    if (this.canvas) {
+      const svgData = this.canvas.toSVG()
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
+      const svgUrl = URL.createObjectURL(svgBlob)
+      const downloadLink = document.createElement('a')
+      downloadLink.href = svgUrl
+      downloadLink.download = fileName + '.svg'
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      document.body.removeChild(downloadLink)
+    }
   }
 }
 

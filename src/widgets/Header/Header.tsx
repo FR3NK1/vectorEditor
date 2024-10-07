@@ -1,5 +1,6 @@
 import { Group, Text } from '@mantine/core'
 import ChangeSizePopover from '../../features/Functions/ui/ChangeSizePopover'
+import ExportToSvgButton from '../../features/Functions/ui/ExportToSvgButton'
 import classes from './Header.module.css'
 
 const Header = () => {
@@ -16,9 +17,7 @@ const Header = () => {
         </Text>
         <ChangeSizePopover />
       </Group>
-      <Text size='xl' fw={900} c='black'>
-        Save
-      </Text>
+      <ExportToSvgButton />
     </Group>
   )
 }
