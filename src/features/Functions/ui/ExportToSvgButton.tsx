@@ -1,4 +1,5 @@
-import { Button, Popover, Stack, Text, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Popover, Stack, TextInput } from '@mantine/core'
+import { IconDownload } from '@tabler/icons-react'
 import { useState } from 'react'
 import { canvasManager } from '../api/CanvasManager'
 
@@ -8,11 +9,9 @@ const ExportToSvgButton = () => {
   return (
     <Popover width={300} trapFocus position='bottom' withArrow shadow='md'>
       <Popover.Target>
-        <Button variant='transparent'>
-          <Text size='xl' fw={900} c='black' style={{ cursor: 'pointer' }}>
-            Сохранить
-          </Text>
-        </Button>
+        <ActionIcon variant='transparent' color='orange'>
+          <IconDownload />
+        </ActionIcon>
       </Popover.Target>
       <Popover.Dropdown>
         <Stack>
