@@ -1,4 +1,3 @@
-import { UniqueIdentifier } from '@dnd-kit/core'
 import { fabric } from 'fabric'
 import {
   GradientColor,
@@ -38,26 +37,13 @@ class CanvasManager {
     }
   }
 
-  getObjectsTypeCount = (type: string) => {
-    return this.canvas
-      ? this.canvas.getObjects().filter((item) => {
-          const itemType = item.data.id.split(' ')[0]
-          return itemType === type
-        }).length + 1
-      : 0
-  }
   public addRect() {
     if (this.canvas) {
       const rect = new fabric.Rect({
         fill: 'red',
         width: 200,
         height: 200,
-        data: {
-          id: 'Rect ' + this.getObjectsTypeCount('Rect'),
-          layer: this.canvas.getObjects().length,
-        },
       })
-      this.id++
 
       this.canvas.add(rect)
       rect.center()
@@ -68,12 +54,7 @@ class CanvasManager {
       const circle = new fabric.Circle({
         fill: 'green',
         radius: 100,
-        data: {
-          id: 'Circle ' + this.getObjectsTypeCount('Circle'),
-          layer: this.canvas.getObjects().length,
-        },
       })
-      this.id++
 
       this.canvas.add(circle)
       circle.center()
@@ -85,12 +66,7 @@ class CanvasManager {
         fill: 'blue',
         width: 200,
         height: 200,
-        data: {
-          id: 'Triangle ' + this.getObjectsTypeCount('Triangle'),
-          layer: this.canvas.getObjects().length,
-        },
       })
-      this.id++
 
       this.canvas.add(triangle)
       triangle.center()
@@ -129,30 +105,6 @@ class CanvasManager {
         selectionGroup.set('fill', gradient)
       }
       this.canvas?.requestRenderAll()
-    }
-  }
-  public moveTo(objectId: UniqueIdentifier, layer: number) {
-    const object = this.canvas?.getObjects().find((item) => item.data.id === objectId)
-    if (object) {
-      object.moveTo(layer)
-      this.canvas?.requestRenderAll()
-    }
-  }
-
-  public selectObjects(objectId: string[]) {
-    if (this.canvas) {
-      const canvasObjects = this.canvas
-        .getObjects()
-        .filter((item) => objectId.includes(item.data.id))
-      if (canvasObjects.length > 0) {
-        this.canvas.discardActiveObject()
-        this.canvas.requestRenderAll()
-        const sel = new fabric.ActiveSelection(canvasObjects, {
-          canvas: this.canvas,
-        })
-        this.canvas.setActiveObject(sel)
-        this.canvas.requestRenderAll()
-      }
     }
   }
 
