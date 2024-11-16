@@ -6,7 +6,7 @@ import {
 
 class CanvasManager {
   canvas: fabric.Canvas | null = null
-  id: number = 1
+  ungroupedObjects: fabric.Object[] = []
 
   public setCanvas() {
     this.canvas = new fabric.Canvas('canvas', {
@@ -30,6 +30,36 @@ class CanvasManager {
       }
     })
   }
+
+  public ungroupActiveObjects() {
+    const canvas = this.canvas as any
+    var activeObject = canvas.getActiveObject()
+    if (activeObject) {
+      if (activeObject.type == 'group') {
+        var items = activeObject._objects
+        activeObject._restoreObjectsState()
+        canvas.remove(activeObject)
+        for (var i = 0; i < items.length; i++) {
+          canvas.add(items[i])
+          items[i].dirty = true
+          canvas.item(canvas.size() - 1).hasControls = true
+          this.ungroupedObjects.push(items[i])
+        }
+
+        canvas.renderAll()
+      }
+    }
+  }
+
+  public groupUngroupedObjects() {
+    const validObjects = this.ungroupedObjects.filter((obj) =>
+      this.canvas?.getObjects().includes(obj),
+    )
+    const group = new fabric.Group(validObjects)
+    this.canvas?.add(group)
+    this.ungroupedObjects = []
+  }
+
   public changeCanvasSize(width: number, height: number) {
     if (this.canvas) {
       this.canvas.setWidth(width)
