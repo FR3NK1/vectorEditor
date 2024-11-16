@@ -55,9 +55,20 @@ class CanvasManager {
     const validObjects = this.ungroupedObjects.filter((obj) =>
       this.canvas?.getObjects().includes(obj),
     )
+
+    if (validObjects.length === 0) {
+      console.warn('No valid objects to group.')
+      return
+    }
+
     const group = new fabric.Group(validObjects)
+
+    // Удалить объекты из холста перед добавлением группы
+    validObjects.forEach((obj) => this.canvas?.remove(obj))
+
     this.canvas?.add(group)
     this.ungroupedObjects = []
+    this.canvas?.requestRenderAll()
   }
 
   public changeCanvasSize(width: number, height: number) {
