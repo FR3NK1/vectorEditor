@@ -1,11 +1,9 @@
 import { UniqueIdentifier } from '@dnd-kit/core'
 import { fabric } from 'fabric'
-import { store } from '../../../app/store/store'
 import {
   GradientColor,
   GradientCoordinates,
 } from '../../Properties/ui/ChangeShapeColor.tsx/ChangeShapeGradient'
-import { addCanvasObject, deleteCanvasObject } from './CanvasSlice'
 
 class CanvasManager {
   canvas: fabric.Canvas | null = null
@@ -59,16 +57,6 @@ class CanvasManager {
           layer: this.canvas.getObjects().length,
         },
       })
-      store.dispatch(
-        addCanvasObject({
-          children: [],
-          depth: 0,
-          id: rect.data.id,
-          index: 0,
-          parentId: null,
-          type: 'file',
-        }),
-      )
       this.id++
 
       this.canvas.add(rect)
@@ -85,16 +73,6 @@ class CanvasManager {
           layer: this.canvas.getObjects().length,
         },
       })
-      store.dispatch(
-        addCanvasObject({
-          children: [],
-          depth: 0,
-          id: circle.data.id,
-          index: 0,
-          parentId: null,
-          type: 'file',
-        }),
-      )
       this.id++
 
       this.canvas.add(circle)
@@ -112,16 +90,6 @@ class CanvasManager {
           layer: this.canvas.getObjects().length,
         },
       })
-      store.dispatch(
-        addCanvasObject({
-          children: [],
-          depth: 0,
-          id: triangle.data.id,
-          index: 0,
-          parentId: null,
-          type: 'file',
-        }),
-      )
       this.id++
 
       this.canvas.add(triangle)
@@ -194,11 +162,9 @@ class CanvasManager {
       if (selectionGroup) {
         if ('_objects' in selectionGroup) {
           selectionGroup._objects.forEach((selectionElement: any) => {
-            store.dispatch(deleteCanvasObject(selectionElement.data.id))
             this.canvas?.remove(selectionElement)
           })
         } else {
-          store.dispatch(deleteCanvasObject(selectionGroup.data.id))
           this.canvas.remove(selectionGroup)
         }
         this.canvas.requestRenderAll()
@@ -211,30 +177,7 @@ class CanvasManager {
       if (this.canvas) {
         const obj = fabric.util.groupSVGElements(objects, options)
 
-        if ('_objects' in obj) {
-          obj._objects.forEach((selectionElement: any) => {
-            if (this.canvas) {
-              selectionElement.set({
-                data: {
-                  id: 'Path ' + this.getObjectsTypeCount('Path'),
-                  layer: this.canvas.getObjects().length,
-                },
-              })
-              store.dispatch(
-                addCanvasObject({
-                  children: [],
-                  depth: 0,
-                  id: selectionElement.data.id,
-                  index: 0,
-                  parentId: null,
-                  type: 'file',
-                }),
-              )
-              this.id++
-              this.canvas.add(selectionElement)
-            }
-          })
-        }
+        this.canvas.add(obj)
         this.canvas.requestRenderAll()
       }
     })

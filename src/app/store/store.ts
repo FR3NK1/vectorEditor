@@ -1,11 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { canvasReducer } from '../../features/Functions/api/CanvasSlice'
 import { VectorImageService } from '../services/VectorImageService'
 
 export const store = configureStore({
   reducer: {
     [VectorImageService.reducerPath]: VectorImageService.reducer,
-    canvas: canvasReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(VectorImageService.middleware),
