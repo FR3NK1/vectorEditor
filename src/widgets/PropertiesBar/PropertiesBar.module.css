@@ -1,6 +1,6 @@
 .propertiesBar {
   height: 100%;
-  width: 350px;
+  width: 360px;
   border-left: calc(0.0625rem * var(--mantine-scale)) solid var(--mantine-color-gray-2);
   padding: 10px;
 }

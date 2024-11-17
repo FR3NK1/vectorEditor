@@ -1,4 +1,5 @@
 import { fabric } from 'fabric'
+import { find } from 'lodash'
 import {
   GradientColor,
   GradientCoordinates,
@@ -187,6 +188,45 @@ class CanvasManager {
       document.body.appendChild(downloadLink)
       downloadLink.click()
       document.body.removeChild(downloadLink)
+    }
+  }
+
+  public getActiveObjectColors() {
+    let colors: (string | fabric.Gradient | fabric.Pattern | undefined)[] = []
+    if (this.canvas) {
+      this.canvas.getObjects().forEach((item) => {
+        colors.push(item.fill)
+        if ('_objects' in item) {
+          const objectItems = item._objects as Array<fabric.Object>
+          objectItems.forEach((objectItem) => {
+            colors.push(objectItem.fill)
+          })
+        }
+      })
+    }
+    return colors.filter((item) => String(item).includes('#'))
+  }
+
+  public changeActiveObjectColors(newColors: { fromColor: string; toColor: string }[]) {
+    if (this.canvas) {
+      this.canvas.getObjects().forEach((item) => {
+        const itemColor = item.fill as string
+        const findColor = find(newColors, ['fromColor', itemColor])
+        if (findColor) {
+          item.set('fill', findColor.toColor)
+        }
+        if ('_objects' in item) {
+          const objectItems = item._objects as Array<fabric.Object>
+          objectItems.forEach((objectItem) => {
+            const itemColor = objectItem.fill as string
+            const findColor = find(newColors, ['fromColor', itemColor])
+            if (findColor) {
+              objectItem.set('fill', findColor.toColor)
+            }
+          })
+        }
+      })
+      this.canvas.renderAll()
     }
   }
 }

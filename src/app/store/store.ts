@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
+import { GPTService } from '../services/GPTService'
 import { VectorImageService } from '../services/VectorImageService'
 
 export const store = configureStore({
   reducer: {
     [VectorImageService.reducerPath]: VectorImageService.reducer,
+    [GPTService.reducerPath]: GPTService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(VectorImageService.middleware),
+    getDefaultMiddleware().concat(VectorImageService.middleware).concat(GPTService.middleware),
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
