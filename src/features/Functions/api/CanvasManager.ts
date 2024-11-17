@@ -1,5 +1,7 @@
 import { fabric } from 'fabric'
 import { find } from 'lodash'
+import { store } from '../../../app/store/store'
+import { CanvasSliceActions } from '../../../entities/Canvas/api/CanvasSlice'
 import {
   GradientColor,
   GradientCoordinates,
@@ -29,6 +31,20 @@ class CanvasManager {
         opt.e.preventDefault()
         opt.e.stopPropagation()
       }
+    })
+
+    this.canvas.on('selection:created', function (obj) {
+      const selectedObjectsTypes = obj.selected?.map((item) => item.data?.objectType)
+      if (selectedObjectsTypes)
+        store.dispatch(CanvasSliceActions.setActiveObject(selectedObjectsTypes))
+    })
+    this.canvas.on('selection:updated', function (obj) {
+      const selectedObjectsTypes = obj.selected?.map((item) => item.data?.objectType)
+      if (selectedObjectsTypes)
+        store.dispatch(CanvasSliceActions.setActiveObject(selectedObjectsTypes))
+    })
+    this.canvas.on('selection:cleared', function () {
+      store.dispatch(CanvasSliceActions.setActiveObject([]))
     })
   }
 
@@ -85,6 +101,9 @@ class CanvasManager {
         fill: 'red',
         width: 200,
         height: 200,
+        data: {
+          objectType: 'Rect',
+        },
       })
 
       this.canvas.add(rect)
@@ -96,6 +115,9 @@ class CanvasManager {
       const circle = new fabric.Circle({
         fill: 'green',
         radius: 100,
+        data: {
+          objectType: 'Circle',
+        },
       })
 
       this.canvas.add(circle)
@@ -108,12 +130,31 @@ class CanvasManager {
         fill: 'blue',
         width: 200,
         height: 200,
+        data: {
+          objectType: 'Triangle',
+        },
       })
 
       this.canvas.add(triangle)
       triangle.center()
     }
   }
+
+  public addText() {
+    if (this.canvas) {
+      const text = new fabric.IText('Sample text', {
+        fontFamily: 'Arial',
+        left: 100,
+        top: 100,
+        data: {
+          objectType: 'Text',
+        },
+      })
+
+      this.canvas.add(text)
+    }
+  }
+
   public changeSelectionColor(color: string) {
     const selectionGroup = this.canvas?.getActiveObject() as any
     if (selectionGroup) {
@@ -227,6 +268,18 @@ class CanvasManager {
         }
       })
       this.canvas.renderAll()
+    }
+  }
+
+  public changeActiveObjectsFont(newFont: string) {
+    if (this.canvas) {
+      const activeObjects = this.canvas.getActiveObjects()
+      activeObjects.forEach((item) => {
+        if (item.data?.objectType && item.data.objectType === 'Text')
+          item.set('fontFamily', newFont)
+      })
+      console.log(activeObjects)
+      this.canvas.requestRenderAll()
     }
   }
 }
