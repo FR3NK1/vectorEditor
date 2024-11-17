@@ -235,7 +235,7 @@ class CanvasManager {
   public getActiveObjectColors() {
     let colors: (string | fabric.Gradient | fabric.Pattern | undefined)[] = []
     if (this.canvas) {
-      this.canvas.getObjects().forEach((item) => {
+      this.canvas.getActiveObjects().forEach((item) => {
         colors.push(item.fill)
         if ('_objects' in item) {
           const objectItems = item._objects as Array<fabric.Object>
