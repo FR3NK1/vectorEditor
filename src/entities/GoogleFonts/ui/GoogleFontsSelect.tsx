@@ -21,7 +21,12 @@ const GoogleFontsSelect = () => {
   return (
     <>
       {data && (
-        <Select value={value} onChange={setValue} data={data.items.map((item) => item.family)} />
+        <Select
+          searchable
+          value={value}
+          onChange={setValue}
+          data={data.items.map((item) => item.family)}
+        />
       )}
     </>
   )
