@@ -1,4 +1,5 @@
 import { Group, Text } from '@mantine/core'
+import LogoutButton from '../../features/Authorization/LogoutButton'
 import ChangeSizePopover from '../../features/Functions/ui/ChangeSizePopover'
 import ExportToSvgButton from '../../features/Functions/ui/ExportToSvgButton'
 import ImportFromSvgButton from '../../features/Functions/ui/ImportFromSvgButton'
@@ -21,6 +22,7 @@ const Header = () => {
       <Group>
         <ImportFromSvgButton />
         <ExportToSvgButton />
+        <LogoutButton />
       </Group>
     </Group>
   )
