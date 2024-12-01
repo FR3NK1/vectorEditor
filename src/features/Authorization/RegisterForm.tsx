@@ -29,6 +29,9 @@ const RegisterForm = () => {
     if ('data' in userInfo) {
       dispatch(UserSliceActions.setUser({ userId: userInfo.data.id, userName: userInfo.data.name }))
     }
+    if ('error' in userInfo) {
+      form.setFieldError('login', 'Такой логин уже занят')
+    }
   }
 
   return (
