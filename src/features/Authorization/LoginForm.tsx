@@ -1,4 +1,4 @@
-import { Button, Group, PasswordInput, TextInput } from '@mantine/core'
+import { Button, Group, PasswordInput, Space, TextInput } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { useAppDispatch } from '../../app/hooks/hooks'
 import { useLoginUserMutation } from '../../entities/User/api/UserApi'
@@ -43,7 +43,7 @@ const LoginForm = () => {
         key={form.key('password')}
         {...form.getInputProps('password')}
       />
-
+      <Space h={'sm'} />
       <Group justify='flex-end'>
         <Button type='submit' loading={isLoading}>
           Войти
