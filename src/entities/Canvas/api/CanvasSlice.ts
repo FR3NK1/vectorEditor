@@ -2,10 +2,12 @@ import { createSlice } from '@reduxjs/toolkit'
 
 export interface ICanvasSlice {
   activeObjects: string[]
+  shapeDrawingEnable: boolean
 }
 
 const initialState: ICanvasSlice = {
   activeObjects: [],
+  shapeDrawingEnable: false,
 }
 
 const CanvasSlice = createSlice({
@@ -14,6 +16,9 @@ const CanvasSlice = createSlice({
   reducers: {
     setActiveObject(state, action) {
       state.activeObjects = action.payload
+    },
+    setShapeDrawingEnable(state, action) {
+      state.shapeDrawingEnable = action.payload
     },
   },
 })

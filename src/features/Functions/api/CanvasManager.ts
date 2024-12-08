@@ -1,7 +1,9 @@
 import { fabric } from 'fabric'
 import { find } from 'lodash'
+import { ShapeService } from '../../../app/services/ShapeService'
 import { store } from '../../../app/store/store'
 import { CanvasSliceActions } from '../../../entities/Canvas/api/CanvasSlice'
+import { IShape } from '../../../entities/Shape/model/IShape'
 import {
   GradientColor,
   GradientCoordinates,
@@ -10,6 +12,10 @@ import {
 class CanvasManager {
   canvas: fabric.Canvas | null = null
   ungroupedObjects: fabric.Object[] = []
+  private drawingEnabled = false
+  private points: fabric.Point[] = []
+  private previewLine: fabric.Line | null = null
+  private temporaryLines: fabric.Line[] = []
 
   public setCanvas() {
     this.canvas = new fabric.Canvas('canvas', {
@@ -137,6 +143,24 @@ class CanvasManager {
 
       this.canvas.add(triangle)
       triangle.center()
+    }
+  }
+
+  public addShape(shape: IShape) {
+    if (this.canvas) {
+      const newShape = new fabric.Path(shape.path, {
+        fill: shape.fill,
+        stroke: shape.stroke,
+        strokeWidth: shape.stroke_width,
+        width: 200,
+        height: 200,
+        data: {
+          objectType: 'Shape',
+        },
+      })
+
+      this.canvas.add(newShape)
+      newShape.center()
     }
   }
 
@@ -281,6 +305,142 @@ class CanvasManager {
       console.log(activeObjects)
       this.canvas.requestRenderAll()
     }
+  }
+
+  public startDrawShape() {
+    if (!this.canvas) return
+
+    this.enableDrawingMode()
+    store.dispatch(CanvasSliceActions.setShapeDrawingEnable(true))
+    this.canvas.on('mouse:down', this.handleMouseDown.bind(this))
+    this.canvas.on('mouse:move', this.handleMouseMove.bind(this))
+  }
+
+  public stopDrawShape() {
+    if (!this.canvas) return
+
+    if (this.points.length > 2) {
+      this.createClosedShape()
+    }
+    this.cleanupDrawing()
+    store.dispatch(CanvasSliceActions.setShapeDrawingEnable(false))
+  }
+
+  private enableDrawingMode() {
+    this.drawingEnabled = true
+    this.points = []
+    this.previewLine = null
+    this.temporaryLines = []
+  }
+
+  private async createClosedShape() {
+    const pathData = this.generatePathData()
+    const path = new fabric.Path(pathData, {
+      fill: '#ffa94d',
+      stroke: '#4dabf7',
+      strokeWidth: 2,
+    })
+
+    await fetch('http://localhost:3000/shapes', {
+      method: 'POST',
+      headers: {
+        Accept: '*/*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        path: pathData,
+        fill: '#ffa94d',
+        stroke: '#4dabf7',
+        stroke_width: 2,
+        userId: store.getState().User.userId,
+      }),
+    })
+    store.dispatch(ShapeService.util.invalidateTags(['Shape']))
+
+    this.canvas?.add(path)
+    this.canvas?.requestRenderAll()
+  }
+
+  private generatePathData(): string {
+    const pathData = this.points.map((point, index) =>
+      index === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`,
+    )
+    pathData.push(`Z`) // Закрыть путь
+    return pathData.join(' ')
+  }
+
+  private cleanupDrawing() {
+    this.removeTemporaryLines()
+    this.resetPreviewLine()
+    this.resetDrawingState()
+    this.removeEventListeners()
+  }
+
+  private removeTemporaryLines() {
+    this.temporaryLines.forEach((line) => this.canvas?.remove(line))
+    this.temporaryLines = []
+  }
+
+  private resetPreviewLine() {
+    if (this.previewLine) {
+      this.canvas?.remove(this.previewLine)
+      this.previewLine = null
+    }
+  }
+
+  private resetDrawingState() {
+    this.drawingEnabled = false
+    this.points = []
+  }
+
+  private removeEventListeners() {
+    this.canvas?.off('mouse:down', this.handleMouseDown.bind(this))
+    this.canvas?.off('mouse:move', this.handleMouseMove.bind(this))
+  }
+
+  private handleMouseDown(event: fabric.IEvent) {
+    if (!this.drawingEnabled || !this.canvas) return
+
+    const pointer = this.canvas.getPointer(event.e)
+    const point = new fabric.Point(pointer.x, pointer.y)
+    this.points.push(point)
+
+    if (this.points.length > 1) {
+      this.addTemporaryLine(point)
+    }
+  }
+
+  private handleMouseMove(event: fabric.IEvent) {
+    if (!this.drawingEnabled || !this.canvas || this.points.length === 0) return
+
+    const pointer = this.canvas.getPointer(event.e)
+    const point = new fabric.Point(pointer.x, pointer.y)
+
+    this.updatePreviewLine(point)
+  }
+
+  private addTemporaryLine(pointer: fabric.Point) {
+    const lastPoint = this.points[this.points.length - 2]
+    const line = new fabric.Line([lastPoint.x, lastPoint.y, pointer.x, pointer.y], {
+      stroke: 'blue',
+      strokeWidth: 2,
+      selectable: false,
+    })
+    this.canvas?.add(line)
+    this.temporaryLines.push(line)
+  }
+
+  private updatePreviewLine(pointer: fabric.Point) {
+    const lastPoint = this.points[this.points.length - 1]
+
+    this.resetPreviewLine()
+    this.previewLine = new fabric.Line([lastPoint.x, lastPoint.y, pointer.x, pointer.y], {
+      stroke: 'red',
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+    })
+    this.canvas?.add(this.previewLine)
   }
 }
 

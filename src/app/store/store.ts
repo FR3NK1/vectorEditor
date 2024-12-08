@@ -3,6 +3,7 @@ import { CanvasReducer } from '../../entities/Canvas/api/CanvasSlice'
 import { UserReducer } from '../../entities/User/api/UserSlice'
 import { GoogleFontsService } from '../services/GoogleFontsService'
 import { GPTService } from '../services/GPTService'
+import { ShapeService } from '../services/ShapeService'
 import { UserService } from '../services/UserService'
 import { VectorImageService } from '../services/VectorImageService'
 
@@ -31,6 +32,7 @@ export const store = configureStore({
     [GPTService.reducerPath]: GPTService.reducer,
     [GoogleFontsService.reducerPath]: GoogleFontsService.reducer,
     [UserService.reducerPath]: UserService.reducer,
+    [ShapeService.reducerPath]: ShapeService.reducer,
     User: UserReducer,
     Canvas: CanvasReducer,
   },
@@ -41,6 +43,7 @@ export const store = configureStore({
       .concat(VectorImageService.middleware)
       .concat(GPTService.middleware)
       .concat(UserService.middleware)
+      .concat(ShapeService.middleware)
       .concat(GoogleFontsService.middleware),
 })
 
