@@ -19,7 +19,7 @@ const GPTApi = GPTService.injectEndpoints({
             'Content-Type': 'application/json',
           },
           body: {
-            model: 'hermes-3-llama-3.1-8b',
+            model: 'qwen2.5-coder-7b-instruct',
             messages: [
               {
                 role: 'user',
@@ -33,7 +33,7 @@ const GPTApi = GPTService.injectEndpoints({
                         Provide the answer as json, which will consist of an array of objects {fromColor, toColor}. Where fromColor is the color from the provided array, toColor is the color that needs to be used to match the brand book.`,
               },
             ],
-            temperature: 0.5,
+            temperature: 0.7,
             max_tokens: -1,
             stream: false,
           },
@@ -41,7 +41,10 @@ const GPTApi = GPTService.injectEndpoints({
       },
       transformResponse: (response) => {
         const gptReponse = response as IGPTResponse
-        return JSON.parse(gptReponse.choices[0].message.content)
+        const content = gptReponse.choices[0].message.content
+          .replace('```json', '')
+          .replace('```', '')
+        return JSON.parse(content)
       },
     }),
   }),
