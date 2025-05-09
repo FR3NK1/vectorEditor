@@ -19,7 +19,7 @@ const GPTApi = GPTService.injectEndpoints({
             'Content-Type': 'application/json',
           },
           body: {
-            model: 'qwen2.5-coder-7b-instruct',
+            model: 'qwen2.5-coder-14b-instruct',
             messages: [
               {
                 role: 'user',

@@ -164,6 +164,21 @@ class CanvasManager {
     }
   }
 
+  public addImage(imageElement: HTMLImageElement) {
+    if (this.canvas) {
+      const newImage = new fabric.Image(imageElement, {
+        width: 512,
+        height: 512,
+        data: {
+          objectType: 'Image',
+        },
+      })
+
+      this.canvas.add(newImage)
+      newImage.center()
+    }
+  }
+
   public addText() {
     if (this.canvas) {
       const text = new fabric.IText('Sample text', {

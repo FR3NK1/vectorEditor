@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { CanvasReducer } from '../../entities/Canvas/api/CanvasSlice'
 import { UserReducer } from '../../entities/User/api/UserSlice'
+import { GenerateImageService } from '../services/GenerateImageService'
 import { GoogleFontsService } from '../services/GoogleFontsService'
 import { GPTService } from '../services/GPTService'
 import { ShapeService } from '../services/ShapeService'
@@ -33,6 +34,7 @@ export const store = configureStore({
     [GoogleFontsService.reducerPath]: GoogleFontsService.reducer,
     [UserService.reducerPath]: UserService.reducer,
     [ShapeService.reducerPath]: ShapeService.reducer,
+    [GenerateImageService.reducerPath]: GenerateImageService.reducer,
     User: UserReducer,
     Canvas: CanvasReducer,
   },
@@ -44,7 +46,8 @@ export const store = configureStore({
       .concat(GPTService.middleware)
       .concat(UserService.middleware)
       .concat(ShapeService.middleware)
-      .concat(GoogleFontsService.middleware),
+      .concat(GoogleFontsService.middleware)
+      .concat(GenerateImageService.middleware),
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
